@@ -1,0 +1,142 @@
+//
+//  CocoaTextFiled.swift
+//  Nakri
+//
+//  Created by max on 2021/2/13.
+//
+
+#if canImport(UIKit) && canImport(SwiftUI)
+
+import UIKit
+import SwiftUI
+
+public struct CocoaTextFiled: View {
+
+  public struct CharactersChange {
+    let range: NSRange
+    let replacement: String
+  }
+  
+  public struct Configuration {
+    var onEditingChanged: (Bool) -> Void
+    var onCommit: () -> Void
+    var onCharactersChange: (CharactersChange) -> Bool = { _ in true }
+    
+    var isInitialFirstResponder: Bool?
+    var isFirstResponder: Bool?
+    
+    var foregroundColor: UIColor?
+    var font: UIFont?
+    
+    /// Text Input Traits
+    var autocapitalizationType: UITextAutocapitalizationType = .sentences
+    var autocorrectionType: UITextAutocorrectionType = .default
+    var keyboardType: UIKeyboardType = .default
+    var returnKeyType: UIReturnKeyType = .default
+    var isSecureTextEntry: Bool = false
+    var textContentType: UITextContentType? = nil
+  }
+  
+  private var text: Binding<String>
+  private var configuration: Configuration
+  
+  public var body: some View {
+    return _CocoaTextField(text: self.text, configuration: self.configuration)
+  }
+}
+
+struct _CocoaTextField: UIViewRepresentable {
+
+  typealias Configuration = CocoaTextField.Configuration
+  typealias UIViewType = UITextField
+  
+  class Coordinator: NSObject, UITextFieldDelegate {
+    
+    var text: Binding<String>
+    var configuration: Configuration
+    
+    init(text: Binding<String>, configuration: Configuration) {
+      self.text = text
+      self.configuration = configuration
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+      self.configuration.onEditingChanged(true)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+      self.configuration.onEditingChanged(false)
+      self.configuration.onCommit()
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+      return self.configuration.onCharactersChange(CocoaTextField.CharactersChange(range: range, replacement: string))
+    }
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+      guard textField.markedTextRange == nil else { return }
+      self.text.wrappedValue = textField.text ?? ""
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+      textField.resignFirstResponder()
+      return true
+    }
+  }
+  
+  var text: Binding<String>
+  var configuration: Configuration
+  
+  func makeUIView(context: Context) -> UITextField {
+    let uiView = UITextField()
+    
+    uiView.delegate = context.coordinator
+    
+    if let isInitialFirstResponder = self.configuration.isInitialFirstResponder, isInitialFirstResponder, context.environment.isEnabled {
+      DispatchQueue.main.async {
+        uiView.becomeFirstResponder()
+      }
+    }
+    
+    return uiView
+  }
+  
+  func updateUIView(_ uiView: UITextField, context: Context) {
+    context.coordinator.text = self.text
+    context.coordinator.configuration = self.configuration
+    
+    uiView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+    
+    uiView.isUserInteractionEnabled = context.environment.isEnabled
+    
+    uiView.textAlignment = NSTextAlignment(context.environment.multilineTextAlignment)
+    
+    uiView.autocapitalizationType = self.configuration.autocapitalizationType
+    uiView.autocorrectionType = self.configuration.autocorrectionType
+    uiView.keyboardType = self.configuration.keyboardType
+    uiView.returnKeyType = self.configuration.returnKeyType
+    uiView.isSecureTextEntry = self.configuration.isSecureTextEntry
+    uiView.textContentType = self.configuration.textContentType
+    
+    uiView.text = self.text.wrappedValue
+    uiView.textColor = self.configuration.foregroundColor
+    uiView.font = self.configuration.font
+    
+    DispatchQueue.main.async {
+      if let isFirstResponder = self.configuration.isFirstResponder, uiView.window != nil {
+        if isFirstResponder && !uiView.isFirstResponder && context.environment.isEnabled {
+          uiView.becomeFirstResponder()
+        }
+        else if !isFirstResponder && uiView.isFirstResponder {
+          uiView.resignFirstResponder()
+        }
+      }
+    }
+  }
+  
+  func makeCoordinator() -> Coordinator {
+    return Coordinator(text: self.text, configuration: self.configuration)
+  }
+}
+
+#endif
