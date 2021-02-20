@@ -1,5 +1,5 @@
 //
-//  CocoaTextFiled.swift
+//  CocoaTextField.swift
 //  Nakri
 //
 //  Created by max on 2021/2/13.
@@ -10,17 +10,17 @@
 import UIKit
 import SwiftUI
 
-public struct CocoaTextFiled: View {
-
-  public struct CharactersChange {
+struct CocoaTextField: View {
+  
+  struct CharactersChange {
     let range: NSRange
     let replacement: String
   }
   
-  public struct Configuration {
+  struct Configuration {
     var onEditingChanged: (Bool) -> Void
     var onCommit: () -> Void
-    var onCharactersChange: (CharactersChange) -> Bool = { _ in true }
+    var onChangeCharacters: (CharactersChange) -> Bool = { _ in true }
     
     var isInitialFirstResponder: Bool?
     var isFirstResponder: Bool?
@@ -28,7 +28,6 @@ public struct CocoaTextFiled: View {
     var foregroundColor: UIColor?
     var font: UIFont?
     
-    /// Text Input Traits
     var autocapitalizationType: UITextAutocapitalizationType = .sentences
     var autocorrectionType: UITextAutocorrectionType = .default
     var keyboardType: UIKeyboardType = .default
@@ -40,22 +39,19 @@ public struct CocoaTextFiled: View {
   private var text: Binding<String>
   private var configuration: Configuration
   
-  public var body: some View {
+  var body: some View {
     return _CocoaTextField(text: self.text, configuration: self.configuration)
   }
 }
 
 struct _CocoaTextField: UIViewRepresentable {
-
-  typealias Configuration = CocoaTextField.Configuration
-  typealias UIViewType = UITextField
-  
+    
   class Coordinator: NSObject, UITextFieldDelegate {
     
     var text: Binding<String>
-    var configuration: Configuration
+    var configuration: CocoaTextField.Configuration
     
-    init(text: Binding<String>, configuration: Configuration) {
+    init(text: Binding<String>, configuration: CocoaTextField.Configuration) {
       self.text = text
       self.configuration = configuration
     }
@@ -70,11 +66,12 @@ struct _CocoaTextField: UIViewRepresentable {
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-      return self.configuration.onCharactersChange(CocoaTextField.CharactersChange(range: range, replacement: string))
+      return self.configuration.onChangeCharacters(CocoaTextField.CharactersChange(range: range, replacement: string))
     }
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
       guard textField.markedTextRange == nil else { return }
+      
       self.text.wrappedValue = textField.text ?? ""
     }
     
@@ -85,13 +82,13 @@ struct _CocoaTextField: UIViewRepresentable {
   }
   
   var text: Binding<String>
-  var configuration: Configuration
+  var configuration: CocoaTextField.Configuration
   
   func makeUIView(context: Context) -> UITextField {
     let uiView = UITextField()
     
     uiView.delegate = context.coordinator
-    
+
     if let isInitialFirstResponder = self.configuration.isInitialFirstResponder, isInitialFirstResponder, context.environment.isEnabled {
       DispatchQueue.main.async {
         uiView.becomeFirstResponder()
@@ -136,6 +133,63 @@ struct _CocoaTextField: UIViewRepresentable {
   
   func makeCoordinator() -> Coordinator {
     return Coordinator(text: self.text, configuration: self.configuration)
+  }
+}
+
+extension CocoaTextField {
+  
+  init(_ text: Binding<String>, onEditingChanged: @escaping (Bool) -> Void = { _ in }, onCommit: @escaping () -> Void = {  }) {
+    self.text = text
+    self.configuration = Configuration(onEditingChanged: onEditingChanged, onCommit: onCommit)
+  }
+}
+
+extension CocoaTextField {
+  
+  func isInitialFirstResponder(_ isInitialFirstResponder: Bool) -> Self {
+    return self.then { $0.configuration.isInitialFirstResponder = isInitialFirstResponder }
+  }
+  
+  func isFirstResponder(_ isFirstResponder: Bool) -> Self {
+    return self.then { $0.configuration.isFirstResponder = isFirstResponder }
+  }
+}
+
+extension CocoaTextField {
+  
+  func foregroundUIColor(_ foregroundUIColor: UIColor) -> Self {
+    return self.then { $0.configuration.foregroundColor = foregroundUIColor }
+  }
+  
+  func uiFont(_ uiFont: UIFont) -> Self {
+    return self.then { $0.configuration.font = uiFont }
+  }
+}
+
+extension CocoaTextField {
+  
+  func autocapitalizationType(_ autocapitalizationType: UITextAutocapitalizationType) -> Self {
+    return self.then { $0.configuration.autocapitalizationType = autocapitalizationType }
+  }
+  
+  func autocorrectionType(_ autocorrectionType: UITextAutocorrectionType) -> Self {
+    return self.then { $0.configuration.autocorrectionType = autocorrectionType }
+  }
+  
+  func keyboardType(_ keyboardType: UIKeyboardType) -> Self {
+    return self.then { $0.configuration.keyboardType = keyboardType }
+  }
+  
+  func returnKeyType(_ returnKeyType: UIReturnKeyType) -> Self {
+    return self.then { $0.configuration.returnKeyType = returnKeyType }
+  }
+  
+  func isSecureTextEntry(_ isSecureTextEntry: Bool) -> Self {
+    return self.then { $0.configuration.isSecureTextEntry = isSecureTextEntry }
+  }
+  
+  func textContentType(_ textContentType: UITextContentType) -> Self {
+    return self.then { $0.configuration.textContentType = textContentType }
   }
 }
 

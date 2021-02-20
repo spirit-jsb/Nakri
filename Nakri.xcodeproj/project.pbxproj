@@ -7,11 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		500EB97A25E16B0500EBD63C /* View+Nakri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EB97925E16B0500EBD63C /* View+Nakri.swift */; };
+		500EB97D25E1BD3100EBD63C /* NSTextAlignment+Nakri.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EB97C25E1BD3100EBD63C /* NSTextAlignment+Nakri.swift */; };
 		50916A5B25D75CC300B23A97 /* Nakri.h in Headers */ = {isa = PBXBuildFile; fileRef = 50916A5925D75CC300B23A97 /* Nakri.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		50916A6825D7600700B23A97 /* CocoaTextFiled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50916A6725D7600700B23A97 /* CocoaTextFiled.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		500EB97925E16B0500EBD63C /* View+Nakri.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Nakri.swift"; sourceTree = "<group>"; };
+		500EB97C25E1BD3100EBD63C /* NSTextAlignment+Nakri.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTextAlignment+Nakri.swift"; sourceTree = "<group>"; };
 		50916A2D25D5388B00B23A97 /* Nakri.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Nakri.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50916A5925D75CC300B23A97 /* Nakri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nakri.h; sourceTree = "<group>"; };
 		50916A5A25D75CC300B23A97 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -29,6 +33,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		500EB97825E16AF100EBD63C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				500EB97925E16B0500EBD63C /* View+Nakri.swift */,
+				500EB97C25E1BD3100EBD63C /* NSTextAlignment+Nakri.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		50916A2325D5388B00B23A97 = {
 			isa = PBXGroup;
 			children = (
@@ -48,9 +61,10 @@
 		50916A5825D75CC300B23A97 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				500EB97825E16AF100EBD63C /* Extensions */,
 				50916A6A25D7601000B23A97 /* Core */,
-				50916A5925D75CC300B23A97 /* Nakri.h */,
 				50916A5A25D75CC300B23A97 /* Info.plist */,
+				50916A5925D75CC300B23A97 /* Nakri.h */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -142,6 +156,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				500EB97A25E16B0500EBD63C /* View+Nakri.swift in Sources */,
+				500EB97D25E1BD3100EBD63C /* NSTextAlignment+Nakri.swift in Sources */,
 				50916A6825D7600700B23A97 /* CocoaTextFiled.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
