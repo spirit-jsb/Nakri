@@ -12,6 +12,32 @@ import SwiftUI
 
 extension NSTextAlignment {
   
+  var alignment: Alignment {
+    switch self {
+    case .left:
+      return .leading
+    case .right:
+      return .trailing
+    case .center:
+      return .center
+    default:
+      return .leading
+    }
+  }
+  
+  var textAlignment: TextAlignment {
+    switch self {
+    case .left:
+      return .leading
+    case .right:
+      return .trailing
+    case .center:
+      return .center
+    default:
+      return .leading
+    }
+  }
+  
   init(_ alignment: TextAlignment) {
     switch alignment {
     case .leading:
