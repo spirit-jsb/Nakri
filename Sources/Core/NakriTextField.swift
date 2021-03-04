@@ -81,9 +81,9 @@ public struct NakriTextField: View {
   }
   
   var lineView: some View {
-    Divider()
+    Rectangle()
+      .fill(Color(self.isFocused ? self.notifier.focusedLineColor : self.notifier.lineColor))
       .frame(height: self.isFocused ? self.notifier.focusedLineHeight : self.notifier.lineHeight, alignment: .leading)
-      .background(Color(self.isFocused ? self.notifier.focusedLineColor : self.notifier.lineColor))
   }
   
   private let placeholderText: String
